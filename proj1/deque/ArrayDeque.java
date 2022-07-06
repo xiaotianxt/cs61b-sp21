@@ -99,14 +99,14 @@ public class ArrayDeque<T> implements Deque<T> {
      */
     @Override
     public T get(int index) {
-        return items[index];
+        return items[(first() + index) % items.length];
     }
 
     /**
      * Returns an iterator to make sure the Deque is iterable.
      */
     @Override
-    public Iterator iterator() {
+    public Iterator<T> iterator() {
         return null;
     }
 
@@ -122,11 +122,11 @@ public class ArrayDeque<T> implements Deque<T> {
         StringBuilder sb = new StringBuilder();
 
         for (int cur = first(); cur != last(); cur = (cur + 1) % items.length) {
-            sb.append(get(cur));
+            sb.append(items[cur]);
                     sb.append(" ");
         }
 
-        sb.append(get(last()));
+        sb.append(items[last()]);
         return sb.toString();
     }
 

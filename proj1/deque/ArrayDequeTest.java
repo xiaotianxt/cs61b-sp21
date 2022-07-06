@@ -10,6 +10,14 @@ import static org.junit.Assert.*;
 
 public class ArrayDequeTest {
     @Test
+    public void testAddGet() {
+        ArrayDeque<Integer> ad = new ArrayDeque<>();
+        ad.addLast(0);
+        assertEquals(0, (int) ad.get(0));
+        ad.addLast(1);
+        assertEquals(1, (int) ad.get(1));
+    }
+    @Test
     public void testAddFirstWithoutResizing() {
         ArrayDeque<Integer> deque = new ArrayDeque<>();
         deque.addFirst(7);
