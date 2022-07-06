@@ -1,2 +1,170 @@
-package deque;public class LinkedListDeque {
+package deque;
+
+import java.util.Iterator;
+
+public class LinkedListDeque<T> implements Deque<T>{
+    private static class Node<T> {
+        public T item;
+        public Node<T> next;
+        public Node<T> prev;
+
+        public Node(T i) {
+            item = i;
+        }
+    }
+
+    private final Node<T> sentinel;
+    private int size;
+
+    public LinkedListDeque() {
+        sentinel = new Node<>(null);
+        sentinel.next = sentinel;
+        sentinel.prev = sentinel;
+        size = 0;
+    }
+
+    /**
+     * Adds an item of type `T' to the front of the deque.
+     */
+    @Override
+    public void addFirst(T item) {
+        Node<T> oldFirst = sentinel.next;
+        Node<T> newFirst = new Node<>(item);
+
+        sentinel.next = newFirst;
+        newFirst.next = oldFirst;
+
+        newFirst.prev = sentinel;
+        oldFirst.prev= newFirst;
+
+        size += 1;
+    }
+
+    /**
+     * Adds an item of type `T' to the back of the deque.
+     */
+    @Override
+    public void addLast(T item) {
+        Node<T> oldLast = sentinel.prev;
+        Node<T> newLast = new Node<>(item);
+
+        sentinel.prev = newLast;
+        newLast.prev = oldLast;
+
+        oldLast.next = newLast;
+        newLast.next = sentinel;
+
+        size += 1;
+    }
+
+    /**
+     * Returns the number of items in the deque.
+     */
+    @Override
+    public int size() {
+        return size;
+    }
+
+    /**
+     * Prints the items in the deque from first to last,
+     * separated by a space.
+     */
+    @Override
+    public void printDeque() {
+        Node<T> node = sentinel.next;
+
+        // print all items, except the last one.
+        while(node != sentinel.prev) {
+            System.out.print(node.item + " ");
+            node = node.next;
+        }
+
+        // print the last item, or print empty line.
+        if (node != sentinel) {
+            System.out.println(node.item);
+        } else {
+            System.out.println();
+        }
+    }
+
+    /**
+     * Removes and returns the item at the front of the deque.
+     * If no such item exists, returns `null'.
+     */
+    @Override
+    public T removeFirst() {
+        Node<T> oldFirst = sentinel.next;
+        Node<T> newFirst = oldFirst.next;
+
+        sentinel.next = newFirst;
+        newFirst.prev = sentinel;
+        size = size == 0 ? 0 : size - 1;
+
+        return oldFirst.item;
+    }
+
+    /**
+     * Removes and returns the item at the back of the deque.
+     * If no such item exists, returns `null'.
+     */
+    @Override
+    public T removeLast() {
+        Node<T> oldLast = sentinel.prev;
+        Node<T> newLast = oldLast.prev;
+        sentinel.prev = newLast;
+        newLast.next = sentinel;
+        size = size == 0 ? 0 : size - 1;
+        return oldLast.item;
+    }
+
+    /**
+     * Gets the item at the given index, where 0 is the front,
+     * 1 is the next item, and so forth.
+     * If no such item exists, returns `null'.
+     */
+    @Override
+    public T get(int index) {
+        if (index >= size) {
+            return null;
+        }
+
+        Node<T> node = sentinel.next;
+        while (index > 0) {
+            index--;
+            node = node.next;
+        }
+
+        return node.item;
+    }
+
+    /**
+     * Gets the item at the given index.
+     * Same as `get', but uses recursion.
+     */
+    public T getRecursive(int index) {
+        if (index < 0 || index >= size) {
+            return null;
+        } else {
+            return getRecursive(sentinel.next, index);
+        }
+    }
+
+    /**
+     * Helping method for `getRecursive'.
+     */
+    private T getRecursive(Node<T> cur, int k) {
+        if (k == 0) {
+            return cur.item;
+        } else {
+            return getRecursive(cur.next, k-1);
+        }
+    }
+
+    /**
+     * Returns an iterator to make sure the Deque is iterable.
+     */
+    @Override
+    public Iterator<T> iterator() {
+        return null;
+    }
 }
