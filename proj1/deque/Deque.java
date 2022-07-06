@@ -1,8 +1,6 @@
 package deque;
 
-import java.util.Iterator;
-
-public interface Deque<T> {
+public interface Deque<T> extends Iterable<T> {
     /**
      * Adds an item of type `T' to the front of the deque.
      */
@@ -49,16 +47,4 @@ public interface Deque<T> {
      * If no such item exists, returns `null'.
      */
     T get(int index);
-
-    /**
-     * Returns an iterator to make sure the Deque is iterable.
-     */
-    Iterator<T> iterator();
-
-    /**
-     * Returns where or not the parameter `o' is equal to the Deque.
-     * `o' is considered equal if it is a Deque and if it contains
-     * the save contents in the same order.
-     */
-    boolean equals(Object o);
 }

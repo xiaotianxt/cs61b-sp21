@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Deque<T>{
+public class LinkedListDeque<T> implements Deque<T> {
     private static class Node<T> {
         public T item;
         public Node<T> next;
@@ -165,6 +165,44 @@ public class LinkedListDeque<T> implements Deque<T>{
      */
     @Override
     public Iterator<T> iterator() {
-        return null;
+        return new Iterator<>() {
+            private Node<T> cur = sentinel;
+            @Override
+            public boolean hasNext() {
+                return cur.next == sentinel;
+            }
+
+            @Override
+            public T next() {
+                cur = sentinel.next;
+                return cur.item;
+            }
+        };
+    }
+
+    /**
+     * Returns where or not the parameter `o' is equal to the Deque.
+     * `o' is considered equal if it is a Deque and if it contains
+     * the same contents in the same order.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Deque)) {
+            return false;
+        }
+
+        Iterator<T> iterA = iterator();
+        Iterator<T> iterB = ((Deque<T>)o).iterator();
+
+        for (T a = iterA.next(), b = iterB.next();
+             iterA.hasNext() && iterB.hasNext();
+             a = iterA.next(), b = iterB.next())
+        {
+            if (!a.equals(b)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

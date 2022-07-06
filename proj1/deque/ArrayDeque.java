@@ -107,7 +107,22 @@ public class ArrayDeque<T> implements Deque<T> {
      */
     @Override
     public Iterator<T> iterator() {
-        return null;
+        return new Iterator<>() {
+            int counter = 0;
+            int index = first();
+            @Override
+            public boolean hasNext() {
+                return counter == size;
+            }
+
+            @Override
+            public T next() {
+                T item = items[index];
+                index = (index + 1) % items.length;
+                counter += 1;
+                return item;
+            }
+        };
     }
 
     /**
@@ -128,6 +143,32 @@ public class ArrayDeque<T> implements Deque<T> {
 
         sb.append(items[last()]);
         return sb.toString();
+    }
+
+    /**
+     * Returns where or not the parameter `o' is equal to the Deque.
+     * `o' is considered equal if it is a Deque and if it contains
+     * the same contents in the same order.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Deque)) {
+            return false;
+        }
+
+        Iterator<T> iterA = iterator();
+        Iterator<T> iterB = ((Deque<T>)o).iterator();
+
+        for (T a = iterA.next(), b = iterB.next();
+            iterA.hasNext() && iterB.hasNext();
+            a = iterA.next(), b = iterB.next())
+        {
+            if (!a.equals(b)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

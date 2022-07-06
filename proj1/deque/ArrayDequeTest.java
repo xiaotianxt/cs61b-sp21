@@ -1,10 +1,6 @@
 package deque;
 
 import org.junit.Test;
-import sun.tools.tree.ArrayExpression;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -148,10 +144,8 @@ public class ArrayDequeTest {
     @Test
     public void testRemoveFirst() {
         ArrayDeque<Integer> ad = new ArrayDeque<>();
-        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 16; i++) {
             ad.addLast(i % 10);
-            sb.append(i % 10).append(' ');
         }
 
         System.out.println(ad);
@@ -165,10 +159,8 @@ public class ArrayDequeTest {
     @Test
     public void testRemoveLast() {
         ArrayDeque<Integer> ad = new ArrayDeque<>();
-        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 16; i++) {
             ad.addLast(i % 10);
-            sb.append(i % 10).append(' ');
         }
 
         System.out.println(ad);
@@ -199,14 +191,14 @@ public class ArrayDequeTest {
     }
 
 
-    @Test
     /** Adds a few things to the list, checking isEmpty() and size() are correct,
      * finally printing the results.
      *
      * && is the "and" operation. */
+    @Test
     public void addIsEmptySizeTest() {
 
-        ArrayDeque<String> lld1 = new ArrayDeque<String>();
+        ArrayDeque<String> lld1 = new ArrayDeque<>();
 
         assertTrue("A newly initialized LLDeque should be empty", lld1.isEmpty());
         lld1.addFirst("front");
@@ -226,11 +218,11 @@ public class ArrayDequeTest {
         lld1.printDeque();
     }
 
-    @Test
     /** Adds an item, then removes an item, and ensures that dll is empty afterwards. */
+    @Test
     public void addRemoveTest() {
 
-        ArrayDeque<Integer> lld1 = new ArrayDeque<Integer>();
+        ArrayDeque<Integer> lld1 = new ArrayDeque<>();
         // should be empty
         assertTrue("lld1 should be empty upon initialization", lld1.isEmpty());
 
@@ -264,12 +256,12 @@ public class ArrayDequeTest {
     }
 
     @Test
-    /* Check if you can create ArrayDeques with different parameterized types*/
+    /* Check if you can create ArrayDeque with different parameterized types*/
     public void multipleParamTest() {
 
-        ArrayDeque<String>  lld1 = new ArrayDeque<String>();
-        ArrayDeque<Double>  lld2 = new ArrayDeque<Double>();
-        ArrayDeque<Boolean> lld3 = new ArrayDeque<Boolean>();
+        ArrayDeque<String>  lld1 = new ArrayDeque<>();
+        ArrayDeque<Double>  lld2 = new ArrayDeque<>();
+        ArrayDeque<Boolean> lld3 = new ArrayDeque<>();
 
         lld1.addFirst("string");
         lld2.addFirst(3.14159);
@@ -278,18 +270,35 @@ public class ArrayDequeTest {
         String s = lld1.removeFirst();
         double d = lld2.removeFirst();
         boolean b = lld3.removeFirst();
+
+        assertEquals("string", s);
+        assertEquals(3.14159, d, 1e-5);
+        assertTrue(b);
     }
 
     @Test
     /* check if null is return when removing from an empty ArrayDeque. */
     public void emptyNullReturnTest() {
 
-        ArrayDeque<Integer> lld1 = new ArrayDeque<Integer>();
+        ArrayDeque<Integer> lld1 = new ArrayDeque<>();
 
-        boolean passed1 = false;
-        boolean passed2 = false;
-        assertEquals("Should return null when removeFirst is called on an empty Deque,", null, lld1.removeFirst());
-        assertEquals("Should return null when removeLast is called on an empty Deque,", null, lld1.removeLast());
+        assertNull("Should return null when removeFirst is called on an empty Deque,", lld1.removeFirst());
+        assertNull("Should return null when removeLast is called on an empty Deque,", lld1.removeLast());
     }
+
+    @Test
+    /* Test iterator. */
+    public void testIterator() {
+        ArrayDeque<Integer> ad = new ArrayDeque<>();
+        for (int i = 1; i <= 10; i++) {
+            ad.addLast(i);
+        }
+
+        int temp = 1;
+        for (int i : ad) {
+            assertEquals(i, temp++);
+        }
+    }
+
 
 }
