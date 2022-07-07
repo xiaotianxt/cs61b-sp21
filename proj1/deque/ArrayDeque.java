@@ -127,7 +127,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
             @Override
             public boolean hasNext() {
-                return counter == size;
+                return counter != size;
             }
 
             @Override
@@ -226,7 +226,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = first(); i != last(); i = (i+1) % items.length) {
+        for (int i = first(); i != last(); i = (i + 1) % items.length) {
             sb.append(items[i]);
             sb.append(' ');
         }
