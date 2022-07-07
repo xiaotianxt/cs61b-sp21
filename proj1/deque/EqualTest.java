@@ -32,11 +32,34 @@ public class EqualTest {
     }
 
     @Test
-    /* LinkedList needs to be equal to itself */
+    /* Deque needs to be equal to itself */
     public void testEqualToItself() {
         LinkedListDeque<Integer> lld = new LinkedListDeque<>();
         assertTrue(lld.equals(lld));
         ArrayDeque<Integer> ad = new ArrayDeque<>();
         assertTrue(ad.equals(ad));
+    }
+
+    private void testNotEqual(Deque<Integer> d1, Deque<Integer> d2) {
+        assertEquals(d1, d2);
+
+        d1.addFirst(0);
+        assertNotEquals(d1, d2);
+
+        d2.addLast(0);
+        assertEquals(d1, d2);
+    }
+
+    @Test
+    /* Test not equal */
+    public void testNotEqual() {
+        testNotEqual(new ArrayDeque<>(), new ArrayDeque<>());
+        testNotEqual(new LinkedListDeque<>(), new LinkedListDeque<>());
+    }
+
+    @Test
+    /* Test different deque */
+    public void testDifferentDeque() {
+        assertFalse((new ArrayDeque<Integer>()).equals(new LinkedListDeque<Integer>()));
     }
 }
