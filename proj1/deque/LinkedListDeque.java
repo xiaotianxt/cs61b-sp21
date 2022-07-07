@@ -234,22 +234,23 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return true;
     }
 
-    /**
-     * Returns the String representation of the deque.
-     */
-    @Override
-    public String toString() {
-        if (size() == 0) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        Iterator<T> iter = iterator();
-        sb.append(iter.next());
-        while (iter.hasNext()) {
-            sb.append(" ");
-            sb.append(iter.next());
-        }
-
-        return sb.toString();
-    }
+//  You need to uncomment the following files to make sure the test files run properly.
+//    /**
+//     * Returns the String representation of the deque.
+//     */
+//    @Override
+//    public String toString() {
+//        if (size() == 0) {
+//            return "";
+//        }
+//        StringBuilder sb = new StringBuilder();
+//        Iterator<T> iter = iterator();
+//        sb.append(iter.next());
+//        while (iter.hasNext()) {
+//            sb.append(" ");
+//            sb.append(iter.next());
+//        }
+//
+//        return sb.toString();
+//    }
 }
