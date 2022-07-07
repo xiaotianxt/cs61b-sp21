@@ -1,6 +1,6 @@
 package deque;
 
-public interface Deque<T> extends Iterable<T> {
+public interface Deque<T> {
     /**
      * Adds an item of type `T' to the front of the deque.
      */
