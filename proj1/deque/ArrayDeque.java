@@ -70,8 +70,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
      */
     @Override
     public T removeFirst() {
-        if (size == 0)
-        {
+        if (size == 0) {
             return null;
         }
 
@@ -123,6 +122,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return new Iterator<>() {
             int counter = 0;
             int index = first();
+
             @Override
             public boolean hasNext() {
                 return counter == size;
@@ -145,17 +145,24 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
      */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof ArrayDeque)) {
+        if (o == null) {
+            return false;
+        }
+        if (o.getClass() != this.getClass()) {
             return false;
         }
 
+        ArrayDeque<T> other = (ArrayDeque<T>) o;
+
         Iterator<T> iterA = iterator();
-        Iterator<T> iterB = ((ArrayDeque<T>) o).iterator();
+        Iterator<T> iterB = other.iterator();
 
         for (T a = iterA.next(), b = iterB.next();
-            iterA.hasNext() && iterB.hasNext();
-            a = iterA.next(), b = iterB.next())
-        {
+             iterA.hasNext() && iterB.hasNext();
+             a = iterA.next(), b = iterB.next()) {
+            if (a == null) {
+                return b == null;
+            }
             if (!a.equals(b)) {
                 return false;
             }
