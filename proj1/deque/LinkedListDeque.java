@@ -2,13 +2,13 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Deque<T> {
+public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     private static class Node<T> {
-        public T item;
-        public Node<T> next;
-        public Node<T> prev;
+        private T item;
+        private Node<T> next;
+        private Node<T> prev;
 
-        public Node(T i) {
+        Node(T i) {
             item = i;
         }
     }
@@ -35,7 +35,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         newFirst.next = oldFirst;
 
         newFirst.prev = sentinel;
-        oldFirst.prev= newFirst;
+        oldFirst.prev = newFirst;
 
         size += 1;
     }
@@ -58,6 +58,14 @@ public class LinkedListDeque<T> implements Deque<T> {
     }
 
     /**
+     * Returns `true' if deque is empty, `false' otherwise.
+     */
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    /**
      * Returns the number of items in the deque.
      */
     @Override
@@ -74,7 +82,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         Node<T> node = sentinel.next;
 
         // print all items, except the last one.
-        while(node != sentinel.prev) {
+        while (node != sentinel.prev) {
             System.out.print(node.item + " ");
             node = node.next;
         }
@@ -156,7 +164,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         if (k == 0) {
             return cur.item;
         } else {
-            return getRecursive(cur.next, k-1);
+            return getRecursive(cur.next, k - 1);
         }
     }
 
@@ -167,6 +175,7 @@ public class LinkedListDeque<T> implements Deque<T> {
     public Iterator<T> iterator() {
         return new Iterator<>() {
             private Node<T> cur = sentinel;
+
             @Override
             public boolean hasNext() {
                 return cur.next == sentinel;
@@ -192,12 +201,11 @@ public class LinkedListDeque<T> implements Deque<T> {
         }
 
         Iterator<T> iterA = iterator();
-        Iterator<T> iterB = ((Deque<T>)o).iterator();
+        Iterator<T> iterB = ((LinkedListDeque<T>) o).iterator();
 
         for (T a = iterA.next(), b = iterB.next();
              iterA.hasNext() && iterB.hasNext();
-             a = iterA.next(), b = iterB.next())
-        {
+             a = iterA.next(), b = iterB.next()) {
             if (!a.equals(b)) {
                 return false;
             }

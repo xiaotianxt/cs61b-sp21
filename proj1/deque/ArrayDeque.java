@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Deque<T> {
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private static final int INITIAL_SIZE = 8;
     private static final int SCALE_FACTOR = 2;
     private T[] items;
@@ -40,6 +40,14 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /**
+     * Returns `true' if deque is empty, `false' otherwise.
+     */
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    /**
      * Returns the number of items in the deque.
      */
     @Override
@@ -62,7 +70,10 @@ public class ArrayDeque<T> implements Deque<T> {
      */
     @Override
     public T removeFirst() {
-        if (size == 0) return null;
+        if (size == 0)
+        {
+            return null;
+        }
 
         nextFirst = first();
 
@@ -80,7 +91,9 @@ public class ArrayDeque<T> implements Deque<T> {
      */
     @Override
     public T removeLast() {
-        if (size == 0) return null;
+        if (size == 0) {
+            return null;
+        }
 
         nextLast = last();
 
@@ -126,38 +139,18 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     /**
-     * Returns the String representation of the list;
-     */
-    @Override
-    public String toString() {
-        if (size == 0) {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        for (int cur = first(); cur != last(); cur = (cur + 1) % items.length) {
-            sb.append(items[cur]);
-                    sb.append(" ");
-        }
-
-        sb.append(items[last()]);
-        return sb.toString();
-    }
-
-    /**
      * Returns where or not the parameter `o' is equal to the Deque.
      * `o' is considered equal if it is a Deque and if it contains
      * the same contents in the same order.
      */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Deque)) {
+        if (!(o instanceof ArrayDeque)) {
             return false;
         }
 
         Iterator<T> iterA = iterator();
-        Iterator<T> iterB = ((Deque<T>)o).iterator();
+        Iterator<T> iterB = ((ArrayDeque<T>) o).iterator();
 
         for (T a = iterA.next(), b = iterB.next();
             iterA.hasNext() && iterB.hasNext();
