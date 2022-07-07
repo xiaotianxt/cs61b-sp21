@@ -60,6 +60,13 @@ public class EqualTest {
     @Test
     /* Test different deque */
     public void testDifferentDeque() {
-        assertFalse((new ArrayDeque<Integer>()).equals(new LinkedListDeque<Integer>()));
+        ArrayDeque<Integer> ad = new ArrayDeque<>();
+        LinkedListDeque<Integer> lld = new LinkedListDeque<>();
+        assertTrue(ad.equals(lld));
+        ad.addFirst(0);
+        lld.addFirst(0);
+        assertTrue(ad.equals(lld));
+        ad.removeFirst();
+        assertFalse(ad.equals(lld));
     }
 }

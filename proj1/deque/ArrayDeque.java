@@ -40,14 +40,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     /**
-     * Returns `true' if deque is empty, `false' otherwise.
-     */
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-    /**
      * Returns the number of items in the deque.
      */
     @Override
@@ -150,13 +142,13 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (o == null) {
             return false;
         }
-        if (o.getClass() != this.getClass()) {
+        if (!(o instanceof Deque)) {
             return false;
         }
 
-        ArrayDeque<T> other = (ArrayDeque<T>) o;
+        Deque<T> other = (Deque<T>) o;
 
-        if (other.size != this.size) {
+        if (other.size() != this.size) {
             return false;
         }
 
@@ -224,17 +216,22 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return (nextLast - 1 + items.length) % items.length;
     }
 
+    /**
+     * Returns the String representation of the deque.
+     */
     @Override
     public String toString() {
-        if (size == 0) {
+        if (size() == 0) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = first(); i != last(); i = (i + 1) % items.length) {
-            sb.append(items[i]);
-            sb.append(' ');
+        Iterator<T> iter = iterator();
+        sb.append(iter.next());
+        while (iter.hasNext()) {
+            sb.append(" ");
+            sb.append(iter.next());
         }
-        sb.append(items[last()]);
+
         return sb.toString();
     }
 }

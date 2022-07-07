@@ -1,6 +1,8 @@
 package deque;
 
-public interface Deque<T> {
+import java.util.Iterator;
+
+public interface Deque<T> extends Iterable<T> {
     /**
      * Adds an item of type `T' to the front of the deque.
      */
@@ -14,7 +16,9 @@ public interface Deque<T> {
     /**
      * Returns `true' if deque is empty, `false' otherwise.
      */
-    boolean isEmpty();
+    default boolean isEmpty() {
+        return size() == 0;
+    }
 
     /**
      * Returns the number of items in the deque.
