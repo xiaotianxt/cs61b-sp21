@@ -221,4 +221,20 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
         return true;
     }
+
+    @Override
+    public String toString() {
+        if (size == 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        Node<T> item = sentinel;
+        for (int i = 0; i < size - 1; i++) {
+            item = item.next;
+            sb.append(item.item);
+            sb.append(' ');
+        }
+        sb.append(item.next.item);
+        return sb.toString();
+    }
 }

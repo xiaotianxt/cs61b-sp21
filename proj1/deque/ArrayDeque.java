@@ -61,7 +61,9 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
      */
     @Override
     public void printDeque() {
-
+        for (T item : this) {
+            System.out.print(item + " ");
+        }
     }
 
     /**
@@ -216,5 +218,19 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
      */
     private int last() {
         return (nextLast - 1 + items.length) % items.length;
+    }
+
+    @Override
+    public String toString() {
+        if (size == 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = first(); i != last(); i = (i+1) % items.length) {
+            sb.append(items[i]);
+            sb.append(' ');
+        }
+        sb.append(items[last()]);
+        return sb.toString();
     }
 }

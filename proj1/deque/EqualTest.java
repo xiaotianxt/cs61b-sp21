@@ -1,5 +1,6 @@
 package deque;
 
+import org.checkerframework.checker.units.qual.A;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -31,14 +32,11 @@ public class EqualTest {
     }
 
     @Test
-    public void testBoth() {
-        ArrayDeque<Integer> ad1 = new ArrayDeque<>();
-        LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
-        for (int i = 0; i < 10; i++) {
-            ad1.addLast(i);
-            lld1.addLast(i);
-        }
-
-        assertEquals(ad1, lld1);
+    /* LinkedList needs to be equal to itself */
+    public void testEqualToItself() {
+        LinkedListDeque<Integer> lld = new LinkedListDeque<>();
+        assertTrue(lld.equals(lld));
+        ArrayDeque<Integer> ad = new ArrayDeque<>();
+        assertTrue(ad.equals(ad));
     }
 }
