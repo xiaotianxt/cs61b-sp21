@@ -1,20 +1,19 @@
 package deque;
 
 import java.util.Comparator;
-import java.util.Iterator;
 
 public class MaxArrayDeque<T> extends ArrayDeque<T> {
-    private final Comparator<T> c_;
+    private final Comparator<T> _c;
 
     public MaxArrayDeque(Comparator<T> c) {
-        c_ = c;
+        _c = c;
     }
 
     /**
      * Returns the maximum item of the deque.
      */
     public T max() {
-        return max(c_);
+        return max(_c);
     }
 
     /**

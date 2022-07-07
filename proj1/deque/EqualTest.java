@@ -1,7 +1,7 @@
 package deque;
 
-import org.checkerframework.checker.units.qual.A;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class EqualTest {

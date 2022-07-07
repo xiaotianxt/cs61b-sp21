@@ -13,6 +13,7 @@ public class ArrayDequeTest {
         ad.addLast(1);
         assertEquals(1, (int) ad.get(1));
     }
+
     @Test
     public void testAddFirstWithoutResizing() {
         ArrayDeque<Integer> deque = new ArrayDeque<>();
@@ -191,10 +192,12 @@ public class ArrayDequeTest {
     }
 
 
-    /** Adds a few things to the list, checking isEmpty() and size() are correct,
+    /**
+     * Adds a few things to the list, checking isEmpty() and size() are correct,
      * finally printing the results.
-     *
-     * && is the "and" operation. */
+     * <p>
+     * && is the "and" operation.
+     */
     @Test
     public void addIsEmptySizeTest() {
 
@@ -218,7 +221,9 @@ public class ArrayDequeTest {
         lld1.printDeque();
     }
 
-    /** Adds an item, then removes an item, and ensures that dll is empty afterwards. */
+    /**
+     * Adds an item, then removes an item, and ensures that dll is empty afterwards.
+     */
     @Test
     public void addRemoveTest() {
 
@@ -259,8 +264,8 @@ public class ArrayDequeTest {
     /* Check if you can create ArrayDeque with different parameterized types*/
     public void multipleParamTest() {
 
-        ArrayDeque<String>  lld1 = new ArrayDeque<>();
-        ArrayDeque<Double>  lld2 = new ArrayDeque<>();
+        ArrayDeque<String> lld1 = new ArrayDeque<>();
+        ArrayDeque<Double> lld2 = new ArrayDeque<>();
         ArrayDeque<Boolean> lld3 = new ArrayDeque<>();
 
         lld1.addFirst("string");

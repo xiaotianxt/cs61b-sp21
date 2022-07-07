@@ -4,7 +4,8 @@ import org.junit.Test;
 
 import java.util.Comparator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class MaxArrayDequeTest {
     private final Comparator<Integer> comparator = Comparator.comparingInt(o -> o);
