@@ -133,18 +133,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     /**
-     * Returns an Iterator by calling .iterator(),
-     * needs to specify the type of o. (ArrayDeque or LinkedListDeque).
-     */
-    private Iterator<T> getIterator(Deque<T> o) {
-        if (this.getClass() == o.getClass()) {
-            return ((ArrayDeque<T>) o).iterator();
-        } else {
-            return ((LinkedListDeque<T>) o).iterator();
-        }
-    }
-
-    /**
      * Returns where or not the parameter `o' is equal to the Deque.
      * `o' is considered equal if it is a Deque and if it contains
      * the same contents in the same order.
@@ -157,15 +145,31 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (!(o instanceof Deque)) {
             return false;
         }
-
-        Deque<T> other = (Deque<T>) o;
-
-        if (this.size != other.size()) {
+        if (size != ((Deque<T>) o).size()) {
             return false;
         }
+        if (!(o instanceof ArrayDeque)) {
+            Deque<T> other = (Deque<T>) o;
+            for (int i = 0; i < size; i++) {
+                T a = get(i);
+                T b = other.get(i);
+                if (a == null) {
+                    if (b != null) {
+                        return false;
+                    }
+                    continue;
+                }
+                if (!a.equals(b)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        ArrayDeque<T> other = (ArrayDeque<T>) o;
 
         Iterator<T> iterA = iterator();
-        Iterator<T> iterB = getIterator(other);
+        Iterator<T> iterB = other.iterator();
 
         for (T a = iterA.next(), b = iterB.next();
              iterA.hasNext() && iterB.hasNext();
