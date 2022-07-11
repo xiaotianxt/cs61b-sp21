@@ -19,7 +19,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     /**
      * The root of BST.
      */
-    private BST<K, V> root;
+    private BST<K, V> tree;
 
     /**
      * The size of BST.
@@ -35,7 +35,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      */
     @Override
     public void clear() {
-        root = null;
+        tree = null;
         size = 0;
     }
 
@@ -59,7 +59,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        return containsKey(root, key);
+        return containsKey(tree, key);
     }
 
     /**
@@ -83,7 +83,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public V get(K key) {
-        BST<K, V> node = get(root, key);
+        BST<K, V> node = get(tree, key);
         if (node != null) {
             return node.value;
         } else {
@@ -104,7 +104,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private BST<K, V> put(BST<K, V> root, K key, V value) {
         if (root == null) {
             size += 1;
-            return new BST<K, V>(key, value);
+            return new BST<>(key, value);
         }
         if (root.key.equals(key)) {
             root.value = value;
@@ -120,7 +120,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public void put(K key, V value) {
-        root = put(root, key, value);
+        tree = put(tree, key, value);
     }
 
     private void keySet(BST<K, V> root, Set<K> set) {
@@ -134,22 +134,126 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     @Override
     public Set<K> keySet() {
         Set<K> set = new HashSet<>();
-        keySet(root, set);
+        keySet(tree, set);
         return set;
     }
 
-    private V remove(BST<K, V> root, K key) {
+    private int numChild(BST<K, V> root) {
+        if (root.left == null && root.right == null) {
+            return 0;
+        } else if (root.left == null) {
+            return 1;
+        } else if (root.right == null) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+
+    /**
+     * Helping method to find the parent of the node `current'.
+     * @return
+     */
+    private BST<K, V> getParent(BST<K, V> parent, BST<K, V> current, K key) {
+        if (current == null) {
+            return null;
+        }
+        if (current.key.equals(key)) {
+            return parent;
+        }
+
+        if (current.key.compareTo(key) < 0) {
+            return getParent(current, current.right, key);
+        } else {
+            return getParent(current, current.left, key);
+        }
+    }
+
+    /**
+     * Returns the biggest node among all nodes that less than key.
+     */
+    private BST<K, V> max(BST<K, V> root) {
+        if (root == null) {
+            throw new RuntimeException("You have to guarantee the there exists a predecessor!");
+        }
+
+        // try to find greater one
+        if (root.right != null) {
+            return max(root.right);
+        } else { // return this one
+            return root;
+        }
+    }
+
+    /**
+     * Helping method to remove a node based on key.
+     * Three cases:
+     *      1. No child for this node: remove the reference of its parent (or remove the root).
+     *      2. One child for this node: change parent's reference to its child.
+     *      3. Two children for this node: replace the node with its predecessor.
+     */
+    private BST<K, V> remove(BST<K, V> root, K key) {
         BST<K, V> node = get(root, key);
         if (node == null) {
             return null;
         }
-        assert node.key.equals(key);
-        return null;
+
+        BST<K, V> parent = getParent(null, tree, key);
+
+        switch(numChild(node)) {
+            case 0:
+                if (node == tree) {
+                    tree = null;
+                    break;
+                }
+                if (parent.left == node) {
+                    parent.left = null;
+                } else {
+                    parent.right = null;
+                }
+                break;
+            case 1:
+                BST<K, V> child = node.left == null ? node.right : node.left;
+                if (node == tree) {
+                    tree = child;
+                    break;
+                }
+                if (parent.left == node) {
+                    parent.left = child;
+                } else {
+                    parent.right = child;
+                }
+                break;
+            case 2:
+                BST<K, V> max = max(node.left);
+                remove(tree, max.key);
+                max.left = node.left;
+                max.right = node.right;
+                if (node == tree) {
+                    tree = max;
+                    break;
+                }
+                if (parent.left == node) {
+                    parent.left = max;
+                } else {
+                    parent.right = max;
+                }
+                break;
+            default:
+                throw new RuntimeException("BST should have 0~2 children!");
+        }
+
+        return node;
     }
 
     @Override
     public V remove(K key) {
-        return remove(root, key);
+        BST<K, V> removedNode = remove(tree, key);
+        if (removedNode == null) {
+            return null;
+        }
+        size -= 1;
+        return removedNode.value;
     }
 
     @Override
