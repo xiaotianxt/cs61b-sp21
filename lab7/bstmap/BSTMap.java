@@ -3,6 +3,7 @@ package bstmap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Stack;
 
 public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private static class BST<K extends Comparable<K>, V> {
@@ -261,6 +262,45 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return null;
     }
 
+    private class BSTIterator implements Iterator<K> {
+        private Stack<BST<K,V>> stack;
+        public BSTIterator() {
+            stack = new Stack<>();
+            pushLeft(tree);
+        }
+
+        private void pushLeft(BST<K, V> root) {
+            if (root != null) {
+                stack.push(root);
+                pushLeft(root.left);
+            }
+        }
+
+        /**
+         * Returns {@code true} if the iteration has more elements.
+         * (In other words, returns {@code true} if {@link #next} would
+         * return an element rather than throwing an exception.)
+         *
+         * @return {@code true} if the iteration has more elements
+         */
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
+
+        /**
+         * Returns the next element in the iteration.
+         *
+         * @return the next element in the iteration
+         */
+        @Override
+        public K next() {
+            BST<K, V> item = stack.pop();
+            pushLeft(item.right);
+            return item.key;
+        }
+    }
+
     /**
      * Returns an iterator over elements of type {@code T}.
      *
@@ -268,6 +308,15 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      */
     @Override
     public Iterator<K> iterator() {
-        return null;
+        return new BSTIterator();
+    }
+
+    public void printInOrder() {
+        for (K key : this) {
+            System.out.print(key);
+            System.out.print(", ");
+        }
+
+        System.out.println();
     }
 }
