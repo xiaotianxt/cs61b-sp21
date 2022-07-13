@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -235,5 +236,58 @@ class Utils {
     static void message(String msg, Object... args) {
         System.out.printf(msg, args);
         System.out.println();
+    }
+
+    /* File and Path */
+
+    /**
+     * Returns the relative path file, clean trivial path.
+     * Example
+     *  relativize(new File("folder1/../a.txt") => File("a.txt");
+     */
+    static File relativize(File file) {
+        File base = Repository.CWD;
+        return new File(base.toURI().relativize(file.toURI()).getPath());
+    }
+
+    /**
+     * Returns the hash string of a file.
+     */
+    public static String hash(File file) {
+        file = relativize(file); // first relativize the file.
+        return sha1(file.getPath() + readContentsAsString(file)); // use SHA-1 as the hash function,
+        //                                                                  it hashes the relative path first.
+    }
+
+    /**
+     * This method creates a Blob file descriptor, it promises that the same file with the same contents
+     * results in the same hash.
+     * @return Returns a File descriptor to the blob file, based on current file path and file contents.
+     */
+    public static File getBlob(File file) {
+        String hash = hash(file); // calculate the hash
+        return join(Repository.BLOB_DIR, hash); // let hash be the filename.
+    }
+
+    /**
+     * Copy contents of src into blobFile.
+     */
+    public static void saveBlob(File src, File blobFile) {
+        copy(src, blobFile);
+    }
+
+    /**
+     * Copy contents of src into a blob file, which is calculated by getBlob(src).
+     */
+    public static void saveBlob(File src) {
+        copy(src, getBlob(src));
+    }
+
+    static void copy(File src, File dst) {
+        try {
+            Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException excp) {
+            throw error("Internal error during copy files.");
+        }
     }
 }
