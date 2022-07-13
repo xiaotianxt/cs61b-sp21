@@ -245,9 +245,14 @@ class Utils {
      * Example
      *  relativize(new File("folder1/../a.txt") => File("a.txt");
      */
-    static File relativize(File file) {
+    public static File relativize(File file) {
         File base = Repository.CWD;
         return new File(base.toURI().relativize(file.toURI()).getPath());
+    }
+
+    public static File relativize(String path) {
+        File file = new File(path);
+        return relativize(file);
     }
 
     /**
@@ -264,9 +269,9 @@ class Utils {
      * results in the same hash.
      * @return Returns a File descriptor to the blob file, based on current file path and file contents.
      */
-    public static File getBlob(File file) {
-        String hash = hash(file); // calculate the hash
-        return join(Repository.BLOB_DIR, hash); // let hash be the filename.
+    public static File createBlobReference(File file) {
+        String blobID = hash(file); // calculate the hash
+        return join(Repository.GITLET_DIR, blobID); // let hash be the filename.
     }
 
     /**
@@ -280,10 +285,13 @@ class Utils {
      * Copy contents of src into a blob file, which is calculated by getBlob(src).
      */
     public static void saveBlob(File src) {
-        copy(src, getBlob(src));
+        copy(src, createBlobReference(src));
     }
 
-    static void copy(File src, File dst) {
+    /**
+     * Copy contents of src into dst
+     */
+    public static void copy(File src, File dst) {
         try {
             Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException excp) {

@@ -1,16 +1,17 @@
 package gitlet;
 
-// TODO: any imports you need here
+import java.io.File;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Map;
 
-import java.util.Date; // TODO: You'll likely use this in this class
+import static gitlet.Utils.*;
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
- *  does at a high level.
  *
- *  @author TODO
+ *  @author xiaotianxt
  */
-public class Commit {
+public class Commit implements Serializable {
     /**
      * TODO: add instance variables here.
      *
@@ -19,8 +20,54 @@ public class Commit {
      * variable is used. We've provided one example for `message`.
      */
 
-    /** The message of this Commit. */
+    /**
+     * The message of this Commit.
+     */
     private String message;
 
-    /* TODO: fill in the rest of this class. */
+    /**
+     * The timestamp of this Commit.
+     */
+    private Date timestamp;
+
+    /**
+     * The author info
+     */
+    private String author;
+
+    /**
+     * The file mapping, it maps a file that locates inside the working directory
+     * to the FileTree that describes the historical commits.
+     */
+    private Map<File, BlobLinkedList> files;
+
+    /**
+     * Reference to parent commit.
+     */
+    private String parentID;
+
+    /**
+     * Used only for merge.
+     */
+    private String secondParentID;
+
+    public Commit(String m, Date t) {
+        message = m;
+        timestamp = t;
+    }
+
+    public Commit(String m) {
+        message = m;
+    }
+
+    @Override
+    public String toString() {
+        return message + timestamp.toString();
+    }
+
+    public void save() {
+        String fileName = sha1(message, timestamp.toString());
+        File commitFile = join(Repository.GITLET_DIR, fileName);
+        writeObject(commitFile, this);
+    }
 }
