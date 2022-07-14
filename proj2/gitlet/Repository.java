@@ -1,37 +1,44 @@
 package gitlet;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Date;
 
 import static gitlet.Utils.*;
 
-// TODO: any imports you need here
 
-/** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
- *  does at a high level.
+/**
+ * Represents a gitlet repository.
+ * This is a singleton Class, it always returns the same repository instance when anyone needs.
  *
- *  @author TODO
+ *  @author xiaotianxt
  */
-public class Repository {
-    /**
-     * TODO: add instance variables here.
-     *
-     * List all instance variables of the Repository class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided two examples for you.
-     */
+public class Repository implements Serializable {
 
     /** The current working directory. */
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
-    /** The staged folder */
-    public static final File STAGED_FILE = join(GITLET_DIR, "staged");
+    /** The singleton object */
+    private static Repository repository;
 
-    /** The head commit reference to current commit */
-    public static final File HEAD_FILE = join(GITLET_DIR, "head");
+    /**
+     * Get Repository instance. If no repository exists
+     */
+    public static Repository getInstance() {
+        if (repository != null) {
+            return repository;
+        }
+
+        if (!GITLET_DIR.isDirectory() || !join(GITLET_DIR, "repo").exists()) {
+            System.out.println("You are not in a gitlet repository.");
+            System.exit(0);
+        }
+
+        repository = Repository.load();
+        return repository;
+    }
 
     /**
      * command: gitlet init
@@ -54,18 +61,20 @@ public class Repository {
             throw error("Error when creating directory.");
         }
 
-        // make basic files.
-        Commit initCommit = new Commit("init commit", new Date(0));
-        Stage stage = new Stage();
-        stage.save();
-        initCommit.save();
+        // create repository.
+        Repository repo = new Repository();
+        repo.save();
     }
 
     /**
      * command: gitlet add [filename]
      */
     public static void add(String fileName) {
-        File file = join(CWD, fileName);
+        loadRepo();
+
+        fileName = relativize(fileName);
+        File file = join(fileName);
+
         // file doesn't exist.
         if (!file.exists()) {
             System.out.println("File not found!");
@@ -76,13 +85,65 @@ public class Repository {
             throw error("Should not do this");
         }
 
-        Stage stage = readObject(STAGED_FILE, Stage.class);
+        // add file to stage
+        if (repository.blobRepo.containsHash(fileName, hash(file))) {
+            return;
+        }
+        Stage stage = repository.stage;
         stage.add(file);
-        stage.save(); // remember to save file.
+
+        saveRepo();
     }
 
     /**
-     * Reference to the head commit.
+     * command: gitlet commit [message]
      */
-    private Commit head;
+    public static void commit(String message) {
+        loadRepo();
+
+        Commit commit = new Commit(message, new Date());
+        Stage stage = repository.stage;
+        commit.summary(stage);
+
+        saveRepo();
+    }
+
+    public static void loadRepo() {
+        if (Repository.getInstance() == null) {
+            System.out.println("You should initialize the gitlet repository first.");
+            System.exit(0);
+        }
+    }
+
+    public static void saveRepo() {
+        if (repository == null) {
+            throw error("No update needed");
+        }
+
+        repository.save();
+    }
+
+    /**
+     * Reference to some key objects.
+     */
+    public String head;
+    public BlobRepo blobRepo;
+    public Stage stage;
+
+    public Repository() {
+        // make basic files.
+        Commit initCommit = new Commit("init commit", new Date(0));
+        initCommit.save();
+        stage = new Stage();
+        blobRepo = new BlobRepo();
+        head = initCommit.hash();
+    }
+
+    private void save() {
+        writeObject(join(GITLET_DIR, "repo"), this);
+    }
+
+    private static Repository load() {
+        return readObject(join(GITLET_DIR, "repo"), Repository.class);
+    }
 }

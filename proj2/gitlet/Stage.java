@@ -20,16 +20,12 @@ public class Stage implements Serializable {
         blobs = new HashMap<>();
     }
 
-    public static Stage load() {
-        return readObject(Repository.STAGED_FILE, Stage.class);
-    }
-
     /**
      * Returns the blob file if add successfully
      */
     public void add(File file) {
-        file = relativize(file);
-        String blobID = blobs.getOrDefault(file.getPath(), null);
+        String filename = file.getPath();
+        String blobID = blobs.getOrDefault(filename, null);
         if (blobID != null) {
             // stage contains blob
             if (blobID.equals(hash(file))) {
@@ -44,16 +40,17 @@ public class Stage implements Serializable {
                 }
             }
         }
+        // TODO: should skip saving if the file remains unchanged.
         File blob = createBlobReference(file);
         saveBlob(file, blob);
         blobs.put(file.getPath(), blob.getName());
     }
 
-    public void clear() {
-        blobs.clear();
+    public Map<String, String> blobs() {
+        return blobs;
     }
 
-    public void save() {
-        writeObject(Repository.STAGED_FILE, this);
+    public void clear() {
+        blobs.clear();
     }
 }

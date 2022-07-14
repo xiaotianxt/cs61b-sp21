@@ -25,6 +25,7 @@ public class Main {
                 break;
             case "commit":
                 validateNumArgs("commit", args, 2);
+                Repository.commit(args[1]);
                 break;
             default:
                 System.out.println("No command with that name exists.");

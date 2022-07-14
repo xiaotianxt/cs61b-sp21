@@ -217,7 +217,7 @@ class Utils {
             objectStream.close();
             return stream.toByteArray();
         } catch (IOException excp) {
-            throw error("Internal error serializing commit.");
+            throw error("Internal error serializing commit.\n" + excp.getMessage());
         }
     }
 
@@ -245,12 +245,12 @@ class Utils {
      * Example
      *  relativize(new File("folder1/../a.txt") => File("a.txt");
      */
-    public static File relativize(File file) {
+    public static String relativize(File file) {
         File base = Repository.CWD;
-        return new File(base.toURI().relativize(file.toURI()).getPath());
+        return base.toURI().relativize(file.toURI()).getPath();
     }
 
-    public static File relativize(String path) {
+    public static String relativize(String path) {
         File file = new File(path);
         return relativize(file);
     }
@@ -259,7 +259,8 @@ class Utils {
      * Returns the hash string of a file.
      */
     public static String hash(File file) {
-        file = relativize(file); // first relativize the file.
+        String filename = file.getPath(); // first relativize the file.
+        file = new File(filename);
         return sha1(file.getPath() + readContentsAsString(file)); // use SHA-1 as the hash function,
         //                                                                  it hashes the relative path first.
     }

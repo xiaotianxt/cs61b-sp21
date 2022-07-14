@@ -36,10 +36,10 @@ public class Commit implements Serializable {
     private String author;
 
     /**
-     * The file mapping, it maps a file that locates inside the working directory
-     * to the FileTree that describes the historical commits.
+     * The file mapping, it maps a file path that locates inside the working directory
+     * to the GITLET_DIR that has the historical commits. (k, v) === (f.getPath(), hash(f))
      */
-    private Map<File, BlobLinkedList> files;
+    private Map<String, String> files;
 
     /**
      * Reference to parent commit.
@@ -56,18 +56,35 @@ public class Commit implements Serializable {
         timestamp = t;
     }
 
-    public Commit(String m) {
-        message = m;
-    }
-
     @Override
     public String toString() {
         return message + timestamp.toString();
     }
 
+    public String hash() {
+        return sha1(message, timestamp.toString());
+    }
+
+    /**
+     * Save commit as file.
+     */
     public void save() {
-        String fileName = sha1(message, timestamp.toString());
+        String fileName = hash();
         File commitFile = join(Repository.GITLET_DIR, fileName);
         writeObject(commitFile, this);
+    }
+
+    /**
+     * Giving a stage object, it summarizes all files.
+     */
+    public void summary(Stage stage) {
+        BlobRepo blobRepo = BlobRepo.load();
+        Map<String, String> blobs = stage.blobs();
+        for (String filename : blobs.keySet()) {
+            if (blobRepo.contains(filename)) {
+                continue;
+            }
+            blobRepo.add(filename);
+        }
     }
 }

@@ -1,18 +1,19 @@
 package gitlet;
 
 import java.io.File;
+import java.io.Serializable;
 
-import static gitlet.Utils.join;
+import static gitlet.Utils.*;
 
 /**
  * A linked list that offers the history of a given file.
  * All files in `FileNode' locate in `.gitlet/blobs'.
  */
-public class BlobLinkedList {
+public class BlobLinkedList implements Serializable {
     /**
      * This is the file in working directory.
      */
-    private File file;
+    private String file;
     /**
      * This is the latest commit of the file.
      */
@@ -35,8 +36,8 @@ public class BlobLinkedList {
         }
     }
 
-    public BlobLinkedList(File file) {
-        this.file = file;
+    public BlobLinkedList(String filename) {
+        this.file = filename;
     }
 
     /**
