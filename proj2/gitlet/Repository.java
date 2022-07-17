@@ -3,6 +3,9 @@ package gitlet;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 import static gitlet.Utils.*;
 
@@ -133,6 +136,84 @@ public class Repository implements Serializable {
         for (Commit item: head) {
             System.out.println(item);
         }
+    }
+
+    /**
+     * 1. checkout -- [filename]
+     * 2. checkout [commit id] -- [filename]
+     * 3. checkout [branch name]
+     */
+    public static void checkout(String[] args) {
+        System.out.println(args.length);
+        String commitId, dash, filename, branchName;
+        switch (args.length) {
+            case 3: // checkout -- [filename]
+                dash = args[1];
+                if (!dash.equals("--")) {
+                    System.out.println("Syntax error.");
+                    return;
+                }
+                filename = relativize(args[2]);
+                checkoutFile(filename);
+                break;
+            case 4:
+                commitId = args[1];
+                dash = args[2];
+                filename = relativize(args[3]);
+                checkoutFile(commitId, filename);
+                break;
+        }
+    }
+
+    /**
+     * checkout -- [filename]
+     */
+    private static void checkoutFile(String filename) {
+        checkoutFile(getInstance().head, filename);
+    }
+
+    /**
+     * checkout [commit id] -- [filename]
+     */
+    private static void checkoutFile(String commitId, String filename) {
+        Commit commit = retrieveCommit(commitId);
+        if (commit == null) {
+            System.out.println("Commit not found.");
+            System.exit(0);
+        }
+//        commit.print();
+        File blob = commit.getBlob(filename);
+        if (blob == null) {
+            System.out.println("File not found in this commit.");
+            System.exit(0);
+        }
+        Utils.restrictedDelete(filename);
+        Utils.copy(blob, new File(filename));
+//        System.out.println("checking out " + filename + " from commit: " + commitId);
+    }
+
+    /**
+     * Returns a commit that has 'commitId' from GITLET_DIR.
+     * Returns `null' if the 'commitId' doesn't exist in GITLET_DIR.
+     */
+    private static Commit retrieveCommit(String commitId) {
+        Queue<Commit> commits = new LinkedList<>();
+        commits.add(head());
+        while (!commits.isEmpty()) {
+            Commit curr = commits.poll();
+            if (curr.hash().equals(commitId)) {
+                return curr;
+            }
+            Commit parent = curr.parent();
+            Commit secondParent = curr.secondParent();
+            if (parent != null) {
+                commits.add(parent);
+            }
+            if (secondParent != null) {
+                commits.add(secondParent);
+            }
+        }
+        return null;
     }
 
     public static void loadRepo() {

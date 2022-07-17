@@ -40,11 +40,10 @@ public class Stage implements Serializable {
                 }
             }
         }
-        // TODO: should skip saving if the file remains unchanged.
         File blob = createBlobReference(file);
         saveBlob(file, blob);
         Commit head = Repository.head();
-        if (!head.contains(file)) {
+        if (!head.containsHash(file)) {
             blobs.put(file.getPath(), blob.getName());
         }
     }

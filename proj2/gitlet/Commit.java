@@ -2,7 +2,6 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -61,16 +60,7 @@ public class Commit implements Serializable, Iterable<Commit> {
         parentID = parent.hash();
     }
 
-    public String hash() {
-        return sha1(message, timestamp.toString());
-    }
-
-    /**
-     * Return true if this commit contains a hash.
-     */
-    public boolean contains(File file) {
-        return Utils.hashFile(file).equals(files.getOrDefault(file.getPath(), null));
-    }
+    /* Mutator and I/O */
 
     /**
      * Save commit as file.
@@ -88,12 +78,55 @@ public class Commit implements Serializable, Iterable<Commit> {
         BlobRepo blobRepo = Repository.blobRepo();
         Map<String, String> blobs = stage.blobs();
         for (String filename : blobs.keySet()) {
+            // add the file into this commit;
+            files.put(filename, blobs.get(filename));
             if (blobRepo.contains(filename)) {
                 blobRepo.append(filename);
                 continue;
             }
             blobRepo.add(filename);
         }
+    }
+
+    /* Accessors */
+
+    public String hash() {
+        return sha1(message, timestamp.toString());
+    }
+
+    /**
+     * Returns the parent of the commit.
+     */
+    public Commit parent() {
+        return parentID == null ? null : Commit.load(parentID);
+    }
+
+    /**
+     * Returns the second parent of the commit.
+     */
+    public Commit secondParent() {
+        return secondParentID == null ? null : Commit.load(secondParentID);
+    }
+
+    public File getBlob(String filename) {
+        if (!files.containsKey(filename)) {
+            return null;
+        }
+        return join(Repository.GITLET_DIR, files.get(filename));
+    }
+
+    /**
+     * Return true if this commit contains exactly a file (same content, same hash).
+     */
+    public boolean containsHash(File file) {
+        return Utils.hashFile(file).equals(files.getOrDefault(file.getPath(), null));
+    }
+
+    /**
+     * Return true if this commit contains this file (contains this file name).
+     */
+    public boolean contains(String filename) {
+        return files.containsKey(filename);
     }
 
     /**
@@ -116,6 +149,16 @@ public class Commit implements Serializable, Iterable<Commit> {
                 return sentinel;
             }
         };
+    }
+
+    /* DEBUG */
+
+    /**
+     * Print the commit into terminal, not the `gitlet log' format.
+     */
+    public void print() {
+        System.out.println("File Tree:");
+        System.out.println(files);
     }
 
     @Override

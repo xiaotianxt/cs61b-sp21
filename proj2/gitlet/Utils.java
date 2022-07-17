@@ -269,7 +269,7 @@ class Utils {
      * Returns the hash string of a file.
      */
     public static String hashFile(String filePath) {
-        return hashFile(join(Repository.GITLET_DIR, filePath));
+        return hashFile(join(Repository.CWD, filePath));
     }
 
     /**
@@ -303,6 +303,8 @@ class Utils {
         try {
             Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException excp) {
+            System.out.println("Copying: " + src.toPath() + " to " + dst.toPath());
+            System.out.println(excp);
             throw error("Internal error during copy files.");
         }
     }

@@ -47,6 +47,7 @@ init:
 	java gitlet.Main init
 	java gitlet.Main add Makefile
 	java gitlet.Main commit "add Makefile"
+	java gitlet.Main log
 
 git:
 	java gitlet.Main $(shell echo $(MAKECMDGOALS) | sed 's!^.* $@ !!')

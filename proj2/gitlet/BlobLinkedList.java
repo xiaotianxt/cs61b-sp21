@@ -19,7 +19,7 @@ public class BlobLinkedList implements Serializable {
      */
     private BlobNode head;
 
-    private static class BlobNode {
+    private static class BlobNode implements Serializable {
         String blobID;
         BlobNode prev;
 
@@ -37,6 +37,7 @@ public class BlobLinkedList implements Serializable {
 
     public BlobLinkedList(String filename) {
         this.file = filename;
+        this.head = new BlobNode(hashFile(filename), null);
     }
 
     /**

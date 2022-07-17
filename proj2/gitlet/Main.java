@@ -31,6 +31,13 @@ public class Main {
                 validateNumArgs("log", args, 1);
                 Repository.log();
                 break;
+            case "checkout":
+                if (args.length < 2 || args.length > 4) {
+                    System.out.println("Error command for checkout."); // TODO: this error message may need to change.
+                    break;
+                }
+                Repository.checkout(args);
+                break;
             default:
                 System.out.println("No command with that name exists.");
                 System.exit(0);
