@@ -16,16 +16,17 @@ public class BlobRepo implements Serializable {
         this.blobRepo = new HashMap<>();
     }
 
-    public static BlobRepo load() {
-        return Repository.getInstance().blobRepo;
-    }
-
     public void add(String filename) {
         if (contains(filename)) {
             throw error("Should not remember a file that has already added");
         }
 
         blobRepo.put(filename, new BlobLinkedList(filename));
+    }
+
+    public void append(String filename) {
+        BlobLinkedList list = blobRepo.get(filename);
+        list.add(Utils.hashFile(filename));
     }
 
     public boolean contains(File file) {

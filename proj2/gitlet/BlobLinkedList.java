@@ -21,7 +21,6 @@ public class BlobLinkedList implements Serializable {
 
     private static class BlobNode {
         String blobID;
-        String hash;
         BlobNode prev;
 
         /**

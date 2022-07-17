@@ -2,8 +2,9 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static gitlet.Utils.*;
 
@@ -11,14 +12,10 @@ import static gitlet.Utils.*;
  *
  *  @author xiaotianxt
  */
-public class Commit implements Serializable {
-    /**
-     * TODO: add instance variables here.
-     *
-     * List all instance variables of the Commit class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided one example for `message`.
-     */
+public class Commit implements Serializable, Iterable<Commit> {
+    public static Commit load(String commitHash) {
+        return readObject(join(Repository.GITLET_DIR, commitHash), Commit.class);
+    }
 
     /**
      * The message of this Commit.
@@ -52,17 +49,27 @@ public class Commit implements Serializable {
     private String secondParentID;
 
     public Commit(String m, Date t) {
+        files = new HashMap<>();
         message = m;
         timestamp = t;
     }
 
-    @Override
-    public String toString() {
-        return message + timestamp.toString();
+    public Commit(String m, Date t, Commit parent) {
+        files = new HashMap<>();
+        message = m;
+        timestamp = t;
+        parentID = parent.hash();
     }
 
     public String hash() {
         return sha1(message, timestamp.toString());
+    }
+
+    /**
+     * Return true if this commit contains a hash.
+     */
+    public boolean contains(File file) {
+        return Utils.hashFile(file).equals(files.getOrDefault(file.getPath(), null));
     }
 
     /**
@@ -78,13 +85,47 @@ public class Commit implements Serializable {
      * Giving a stage object, it summarizes all files.
      */
     public void summary(Stage stage) {
-        BlobRepo blobRepo = BlobRepo.load();
+        BlobRepo blobRepo = Repository.blobRepo();
         Map<String, String> blobs = stage.blobs();
         for (String filename : blobs.keySet()) {
             if (blobRepo.contains(filename)) {
+                blobRepo.append(filename);
                 continue;
             }
             blobRepo.add(filename);
         }
+    }
+
+    /**
+     * Returns an iterator over elements of type {@code T}.
+     *
+     * @return an Iterator.
+     */
+    @Override
+    public Iterator<Commit> iterator() {
+        return new Iterator<>() {
+            private Commit sentinel = new Commit("sentinel", new Date(), Repository.head());
+            @Override
+            public boolean hasNext() {
+                return sentinel.parentID != null;
+            }
+
+            @Override
+            public Commit next() {
+                sentinel = load(sentinel.parentID);
+                return sentinel;
+            }
+        };
+    }
+
+    @Override
+    public String toString() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
+
+        String date = dateFormat.format(timestamp);
+        return "===\n" +
+                "commit " + hash() + "\n" +
+                "Date: " + date + "\n" +
+                message + "\n";
     }
 }

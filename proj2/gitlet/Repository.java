@@ -41,6 +41,21 @@ public class Repository implements Serializable {
     }
 
     /**
+     * Get the head commit of current Repository.
+     */
+    public static Commit head() {
+        return readObject(join(GITLET_DIR, getInstance().head), Commit.class) ;
+    }
+
+    public static BlobRepo blobRepo() {
+        return getInstance().blobRepo;
+    }
+
+    public static Stage stage() {
+        return getInstance().stage;
+    }
+
+    /**
      * command: gitlet init
      */
     public static void init() {
@@ -86,7 +101,7 @@ public class Repository implements Serializable {
         }
 
         // add file to stage
-        if (repository.blobRepo.containsHash(fileName, hash(file))) {
+        if (repository.blobRepo.containsHash(fileName, hashFile(file))) {
             return;
         }
         Stage stage = repository.stage;
@@ -101,11 +116,23 @@ public class Repository implements Serializable {
     public static void commit(String message) {
         loadRepo();
 
-        Commit commit = new Commit(message, new Date());
+        Commit commit = new Commit(message, new Date(), head());
         Stage stage = repository.stage;
         commit.summary(stage);
+        commit.save();
 
+        repository.head = commit.hash();
         saveRepo();
+    }
+
+    /**
+     * command: gitlet log
+     */
+    public static void log() {
+        Commit head = head();
+        for (Commit item: head) {
+            System.out.println(item);
+        }
     }
 
     public static void loadRepo() {
@@ -123,16 +150,20 @@ public class Repository implements Serializable {
         repository.save();
     }
 
+    private static Repository load() {
+        return readObject(join(GITLET_DIR, "repo"), Repository.class);
+    }
+
     /**
      * Reference to some key objects.
      */
-    public String head;
-    public BlobRepo blobRepo;
-    public Stage stage;
+    private String head;
+    private BlobRepo blobRepo;
+    private Stage stage;
 
     public Repository() {
         // make basic files.
-        Commit initCommit = new Commit("init commit", new Date(0));
+        Commit initCommit = new Commit("initial commit", new Date(0));
         initCommit.save();
         stage = new Stage();
         blobRepo = new BlobRepo();
@@ -141,9 +172,5 @@ public class Repository implements Serializable {
 
     private void save() {
         writeObject(join(GITLET_DIR, "repo"), this);
-    }
-
-    private static Repository load() {
-        return readObject(join(GITLET_DIR, "repo"), Repository.class);
     }
 }

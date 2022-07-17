@@ -28,7 +28,7 @@ public class Stage implements Serializable {
         String blobID = blobs.getOrDefault(filename, null);
         if (blobID != null) {
             // stage contains blob
-            if (blobID.equals(hash(file))) {
+            if (blobID.equals(hashFile(file))) {
                 // same with stage, ignore
                 System.out.println("Ignore");
                 System.exit(0);
@@ -43,7 +43,10 @@ public class Stage implements Serializable {
         // TODO: should skip saving if the file remains unchanged.
         File blob = createBlobReference(file);
         saveBlob(file, blob);
-        blobs.put(file.getPath(), blob.getName());
+        Commit head = Repository.head();
+        if (!head.contains(file)) {
+            blobs.put(file.getPath(), blob.getName());
+        }
     }
 
     public Map<String, String> blobs() {

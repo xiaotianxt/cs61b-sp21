@@ -258,11 +258,18 @@ class Utils {
     /**
      * Returns the hash string of a file.
      */
-    public static String hash(File file) {
+    public static String hashFile(File file) {
         String filename = file.getPath(); // first relativize the file.
         file = new File(filename);
         return sha1(file.getPath() + readContentsAsString(file)); // use SHA-1 as the hash function,
         //                                                                  it hashes the relative path first.
+    }
+
+    /**
+     * Returns the hash string of a file.
+     */
+    public static String hashFile(String filePath) {
+        return hashFile(join(Repository.GITLET_DIR, filePath));
     }
 
     /**
@@ -271,7 +278,7 @@ class Utils {
      * @return Returns a File descriptor to the blob file, based on current file path and file contents.
      */
     public static File createBlobReference(File file) {
-        String blobID = hash(file); // calculate the hash
+        String blobID = hashFile(file); // calculate the hash
         return join(Repository.GITLET_DIR, blobID); // let hash be the filename.
     }
 

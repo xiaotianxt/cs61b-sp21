@@ -27,6 +27,10 @@ public class Main {
                 validateNumArgs("commit", args, 2);
                 Repository.commit(args[1]);
                 break;
+            case "log":
+                validateNumArgs("log", args, 1);
+                Repository.log();
+                break;
             default:
                 System.out.println("No command with that name exists.");
                 System.exit(0);
@@ -43,7 +47,7 @@ public class Main {
      */
     public static void validateNumArgs(String cmd, String[] args, int n) {
         if (args.length != n) {
-            System.out.println();
+            System.out.println("Length not correct!");
         }
 
     }

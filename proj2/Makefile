@@ -42,3 +42,9 @@ clean:
 	$(RMAKE) -C $(PACKAGE) clean
 	$(RMAKE) -C testing clean
 
+init:
+	$(RM) -r .gitlet
+	java gitlet.Main init
+
+git:
+	java gitlet.Main $(shell echo $(MAKECMDGOALS) | sed 's!^.* $@ !!')
