@@ -123,6 +123,7 @@ public class Repository implements Serializable {
         Stage stage = repository.stage;
         commit.summary(stage);
         commit.save();
+        stage.clear();
 
         repository.head = commit.hash();
         saveRepo();
@@ -144,7 +145,6 @@ public class Repository implements Serializable {
      * 3. checkout [branch name]
      */
     public static void checkout(String[] args) {
-        System.out.println(args.length);
         String commitId, dash, filename, branchName;
         switch (args.length) {
             case 3: // checkout -- [filename]
@@ -159,6 +159,10 @@ public class Repository implements Serializable {
             case 4:
                 commitId = args[1];
                 dash = args[2];
+                if (!dash.equals("--")) {
+                    System.out.println("Syntax error.");
+                    return;
+                }
                 filename = relativize(args[3]);
                 checkoutFile(commitId, filename);
                 break;
