@@ -170,6 +170,9 @@ public class Commit implements Serializable, Iterable<Commit> {
         String date = dateFormat.format(timestamp);
         return "===\n" +
                 "commit " + hash() + "\n" +
+                (secondParentID == null ?
+                        "" :
+                        ("Merge: " + parentID.substring(0, 7) + " " + secondParentID.substring(0, 7) + "\n")) +
                 "Date: " + date + "\n" +
                 message + "\n";
     }
