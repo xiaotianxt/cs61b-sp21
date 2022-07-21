@@ -7,9 +7,10 @@ import java.util.*;
 
 import static gitlet.Utils.*;
 
-/** Represents a gitlet commit object.
+/**
+ * Represents a gitlet commit object.
  *
- *  @author xiaotianxt
+ * @author xiaotianxt
  */
 public class Commit implements Serializable, Iterable<Commit> {
     public static Commit load(String commitHash) {
@@ -138,6 +139,7 @@ public class Commit implements Serializable, Iterable<Commit> {
     public Iterator<Commit> iterator() {
         return new Iterator<>() {
             private Commit sentinel = new Commit("sentinel", new Date(), Repository.head());
+
             @Override
             public boolean hasNext() {
                 return sentinel.parentID != null;

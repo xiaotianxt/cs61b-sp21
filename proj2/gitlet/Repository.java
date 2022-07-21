@@ -2,10 +2,7 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 import static gitlet.Utils.*;
 
@@ -14,16 +11,23 @@ import static gitlet.Utils.*;
  * Represents a gitlet repository.
  * This is a singleton Class, it always returns the same repository instance when anyone needs.
  *
- *  @author xiaotianxt
+ * @author xiaotianxt
  */
 public class Repository implements Serializable {
 
-    /** The current working directory. */
+    /**
+     * The current working directory.
+     */
     public static final File CWD = new File(System.getProperty("user.dir"));
-    /** The .gitlet directory. */
+
+    /**
+     * The .gitlet directory.
+     */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
-    /** The singleton object */
+    /**
+     * The singleton object
+     */
     private static Repository repository;
 
     /**
@@ -47,7 +51,7 @@ public class Repository implements Serializable {
      * Get the head commit of current Repository.
      */
     public static Commit head() {
-        return readObject(join(GITLET_DIR, getInstance().head), Commit.class) ;
+        return readObject(join(GITLET_DIR, getInstance().head), Commit.class);
     }
 
     public static BlobRepo blobRepo() {
@@ -126,6 +130,7 @@ public class Repository implements Serializable {
         stage.clear();
 
         repository.head = commit.hash();
+        repository.branchTree.put(repository.branch, repository.head);
         saveRepo();
     }
 
@@ -134,7 +139,7 @@ public class Repository implements Serializable {
      */
     public static void log() {
         Commit head = head();
-        for (Commit item: head) {
+        for (Commit item : head) {
             System.out.println(item);
         }
     }
@@ -182,13 +187,13 @@ public class Repository implements Serializable {
     private static void checkoutFile(String commitId, String filename) {
         Commit commit = retrieveCommit(commitId);
         if (commit == null) {
-            System.out.println("Commit not found.");
+            System.out.println("No commit with that id exists.");
             System.exit(0);
         }
 //        commit.print();
         File blob = commit.getBlob(filename);
         if (blob == null) {
-            System.out.println("File not found in this commit.");
+            System.out.println("File does not exist in that commit.");
             System.exit(0);
         }
         Utils.restrictedDelete(filename);
@@ -243,6 +248,19 @@ public class Repository implements Serializable {
      * Reference to some key objects.
      */
     private String head;
+
+    /**
+     * Current branch name.
+     */
+    private String branch;
+
+    /**
+     * Reference the Map of branches.
+     * key: branch name
+     * value: commit hash
+     */
+    private Map<String, String> branchTree;
+
     private BlobRepo blobRepo;
     private Stage stage;
 
@@ -253,6 +271,12 @@ public class Repository implements Serializable {
         stage = new Stage();
         blobRepo = new BlobRepo();
         head = initCommit.hash();
+        branch = "master";
+        branchTree = new HashMap<>() {
+            {
+                put("master", head);
+            }
+        };
     }
 
     private void save() {
